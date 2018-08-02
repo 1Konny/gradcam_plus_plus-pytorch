@@ -70,7 +70,7 @@ class GradCAM(object):
                 print('saliency_map size :', self.activations['value'].shape[2:])
             
             
-    def forward(self, input, class_idx=None):
+    def forward(self, input, class_idx=None, retain_graph=False):
         """
         Args:
             input: input image with shape of (1, 3, H, W)
@@ -89,7 +89,7 @@ class GradCAM(object):
             score = logit[:, class_idx].squeeze()
             
         self.model_arch.zero_grad()
-        score.backward(retain_graph=True)
+        score.backward(retain_graph=retain_graph)
         gradients = self.gradients['value']
         activations = self.activations['value']
         b, k, u, v = gradients.size()
@@ -106,7 +106,7 @@ class GradCAM(object):
         
         return saliency_map, logit
     
-    def __call__(self, input, class_idx=None):
+    def __call__(self, input, class_idx=None, retain_graph=False):
         return self.forward(input, class_idx)
     
     
@@ -114,7 +114,7 @@ class GradCAMpp(GradCAM):
     def __init__(self, model_dict, verbose=False):
         super(GradCAMpp, self).__init__(model_dict, verbose)
             
-    def forward(self, input, class_idx=None):
+    def forward(self, input, class_idx=None, retain_graph=False):
         """
         Args:
             input: input image with shape of (1, 3, H, W)
@@ -133,7 +133,7 @@ class GradCAMpp(GradCAM):
             score = logit[:, class_idx].squeeze()
             
         self.model_arch.zero_grad()
-        score.backward(retain_graph=True)
+        score.backward(retain_graph=retain_graph)
         gradients = self.gradients['value']
         activations = self.activations['value']
         b, k, u, v = gradients.size()
