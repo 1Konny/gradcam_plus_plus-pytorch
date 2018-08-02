@@ -58,7 +58,7 @@ def find_resnet_layer(arch, target_layer_name):
             raise ValueError('unknown layer : {}'.format(target_layer_name))
 
         if len(hierarchy) >= 2:
-            bottleneck_num = int(hierarchy[1].lower().lstrip('bottleneck').lstrip('basicblock'))-1
+            bottleneck_num = int(hierarchy[1].lower().lstrip('bottleneck').lstrip('basicblock'))
             target_layer = target_layer[bottleneck_num]
 
         if len(hierarchy) >= 3:
