@@ -4,8 +4,15 @@
 <img src=assets/readme.png>
 </p>
 
+### Supported torchvision models
+- alexnet
+- vgg
+- resnet
+- densenet
+- squeezenet
+
 ### Usage
-please refer to example.ipynb for general usage and refer to documentations of each layer-finding functions in utils.py if you want to know how to set `target_layer_name` properly.
+please refer to `example.ipynb` for general usage and refer to documentations of each layer-finding functions in `utils.py` if you want to know how to set `target_layer_name` properly.
 
 ### References:
 [1] Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization, Selvaraju et al, ICCV, 2017 <br>
