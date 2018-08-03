@@ -111,6 +111,31 @@ class GradCAM(object):
 
 
 class GradCAMpp(GradCAM):
+    """Calculate GradCAM++ salinecy map.
+
+    A simple example:
+
+        # initialize a model, model_dict and gradcampp
+        resnet = torchvision.models.resnet101(pretrained=True)
+        resnet.eval()
+        model_dict = dict(model_type='resnet', arch=resnet, layer_name='layer4', input_size=(224, 224))
+        gradcampp = GradCAMpp(model_dict)
+
+        # get an image and normalize with mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)
+        img = load_img()
+        normed_img = normalizer(img)
+
+        # get a GradCAM saliency map on the class index 10.
+        mask, logit = gradcampp(normed_img, class_idx=10)
+
+        # make heatmap from mask and synthesize saliency map using heatmap and img
+        heatmap, cam_result = visualize_cam(mask, img)
+
+
+    Args:
+        model_dict (dict): a dictionary that contains 'model_type', 'arch', layer_name', 'input_size'(optional) as keys.
+        verbose (bool): whether to print output size of the saliency map givien 'layer_name' and 'input_size' in model_dict.
+    """
     def __init__(self, model_dict, verbose=False):
         super(GradCAMpp, self).__init__(model_dict, verbose)
 
@@ -130,8 +155,8 @@ class GradCAMpp(GradCAM):
         if class_idx is None:
             score = logit[:, logit.max(1)[-1]].squeeze()
         else:
-            score = logit[:, class_idx].squeeze()
-
+            score = logit[:, class_idx].squeeze() 
+            
         self.model_arch.zero_grad()
         score.backward(retain_graph=retain_graph)
         gradients = self.gradients['value'] # dS/dA
