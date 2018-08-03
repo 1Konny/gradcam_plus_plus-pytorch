@@ -134,8 +134,8 @@ class GradCAMpp(GradCAM):
 
         self.model_arch.zero_grad()
         score.backward(retain_graph=retain_graph)
-        gradients = self.gradients['value']
-        activations = self.activations['value']
+        gradients = self.gradients['value'] # dS/dA
+        activations = self.activations['value'] # A
         b, k, u, v = gradients.size()
 
         alpha_num = gradients.pow(2)
@@ -144,7 +144,7 @@ class GradCAMpp(GradCAM):
         alpha_denom = torch.where(alpha_denom != 0.0, alpha_denom, torch.ones_like(alpha_denom))
 
         alpha = alpha_num.div(alpha_denom+1e-7)
-        positive_gradients = F.relu(gradients)
+        positive_gradients = F.relu(score.exp()*gradients) # ReLU(dY/dA) == ReLU(exp(S)*dS/dA))
         weights = (alpha*positive_gradients).view(b, k, u*v).sum(-1).view(b, k, 1, 1)
 
         saliency_map = (weights*activations).sum(1, keepdim=True)
