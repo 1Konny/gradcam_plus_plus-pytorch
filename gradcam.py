@@ -164,8 +164,10 @@ class GradCAMpp(GradCAM):
         b, k, u, v = gradients.size()
 
         alpha_num = gradients.pow(2)
-        alpha_denom = gradients.pow(2).mul(2) + \
-                activations.mul(gradients.pow(3)).view(b, k, u*v).sum(-1, keepdim=True).view(b, k, 1, 1)
+        
+        global_sum = activations.view(b, k, u*v).sum(-1, keepdim=True).view(b, k, 1, 1)
+        alpha_denom = gradients.pow(2).mul(2) + global_sum.mul(gradients.pow(3))
+
         alpha_denom = torch.where(alpha_denom != 0.0, alpha_denom, torch.ones_like(alpha_denom))
 
         alpha = alpha_num.div(alpha_denom+1e-7)
